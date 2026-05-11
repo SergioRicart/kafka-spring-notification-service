@@ -27,9 +27,31 @@
 			<id>confluent</id>
 			<url>https://packages.confluent.io/maven/</url>
 		</repository>
+		<repository>
+			<id>sergioricart-commons</id>
+			<name>Common Code</name>
+			<url>https://maven.pkg.github.com/SergioRicart/microservice-commons</url>
+		</repository>
+		<repository>
+			<id>sergioricart-user-events</id>
+			<name>User Events</name>
+			<url>https://maven.pkg.github.com/SergioRicart/kafka-spring-user-service</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.sergioricart</groupId>
+			<artifactId>sergioricart-user-events</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sergioricart</groupId>
+			<artifactId>sergioricart-microservice-commons</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
