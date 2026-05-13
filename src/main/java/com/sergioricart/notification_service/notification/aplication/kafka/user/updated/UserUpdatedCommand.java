@@ -12,6 +12,5 @@ public class UserUpdatedCommand implements Command<VoidResponse> {
     private String lastName;
     private String role;
     private String email;
-    private String password;
 
 }

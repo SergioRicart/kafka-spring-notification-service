@@ -19,6 +19,8 @@ public interface UserEventMapper {
 
     UserDeletedCommand mapToUserDeletedCommand(UserDeletedEvent event);
 
-
+    default String map(CharSequence value) {
+        return value != null ? value.toString() : null;
+    }
 
 }
