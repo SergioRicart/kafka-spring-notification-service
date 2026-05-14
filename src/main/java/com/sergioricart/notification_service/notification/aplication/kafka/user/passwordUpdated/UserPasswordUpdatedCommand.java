@@ -10,7 +10,7 @@ public class UserPasswordUpdatedCommand implements Command<VoidResponse> {
     private String id;
     private String firstName;
     private String lastName;
-    private String role;
+    private String roleId;
     private String email;
 
 }

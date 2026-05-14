@@ -10,6 +10,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
+import java.time.Instant;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserEventMapper {
 
@@ -21,6 +23,10 @@ public interface UserEventMapper {
 
     default String map(CharSequence value) {
         return value != null ? value.toString() : null;
+    }
+
+    default Instant map(long value) {
+        return Instant.ofEpochMilli(value);
     }
 
 }
