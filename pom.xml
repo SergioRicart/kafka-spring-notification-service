@@ -6,10 +6,10 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.14</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.sergioricart</groupId>
-	<artifactId>notification_service</artifactId>
+	<artifactId>sergioricart-notification_service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
@@ -27,9 +27,31 @@
 			<id>confluent</id>
 			<url>https://packages.confluent.io/maven/</url>
 		</repository>
+		<repository>
+			<id>sergioricart-commons</id>
+			<name>Common Code</name>
+			<url>https://maven.pkg.github.com/SergioRicart/microservice-commons</url>
+		</repository>
+		<repository>
+			<id>sergioricart-user-events</id>
+			<name>User Events</name>
+			<url>https://maven.pkg.github.com/SergioRicart/kafka-spring-user-service</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.sergioricart</groupId>
+			<artifactId>sergioricart-user-events</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sergioricart</groupId>
+			<artifactId>sergioricart-microservice-commons</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -109,6 +131,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
 	</dependencies>
