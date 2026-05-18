@@ -1,0 +1,222 @@
+asyncapi: "2.6.0"
+
+info:
+  title: Notification Service
+  version: "1.0.0"
+  description: |
+    Microservicio de notificaciones basado en eventos.
+    Consume eventos de usuario desde Kafka, envía emails transaccionales
+    y registra cada notificación en PostgreSQL.
+  contact:
+    name: Sergio Ricart
+    url: https://github.com/sergioricart
+
+servers:
+  production:
+    url: "{kafkaBootstrapServers}"
+    protocol: kafka
+    description: Broker de Kafka
+    variables:
+      kafkaBootstrapServers:
+        default: localhost:9092
+        description: Dirección del broker Kafka (variable de entorno KAFKA_BOOTSTRAP_SERVERS)
+    bindings:
+      kafka:
+        schemaRegistryUrl: "{schemaRegistryUrl}"
+        schemaRegistryVendor: confluent
+
+defaultContentType: application/avro
+
+channels:
+  user.events:
+    description: |
+      Topic que contiene todos los eventos del ciclo de vida de un usuario.
+      Publicado por el User Service y consumido por este servicio.
+    subscribe:
+      summary: Consume eventos de usuario para enviar notificaciones por email
+      operationId: onUserEvent
+      bindings:
+        kafka:
+          groupId:
+            type: string
+            enum: [spring-service-group]
+          clientId:
+            type: string
+          bindingVersion: "0.4.0"
+      message:
+        oneOf:
+          - $ref: "#/components/messages/UserCreatedEvent"
+          - $ref: "#/components/messages/UserUpdatedEvent"
+          - $ref: "#/components/messages/UserDeletedEvent"
+          - $ref: "#/components/messages/UserPasswordUpdatedEvent"
+
+components:
+  messages:
+    UserCreatedEvent:
+      name: UserCreatedEvent
+      title: Usuario creado
+      summary: Se publica cuando se crea un nuevo usuario en el sistema
+      contentType: application/avro
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      traits:
+        - $ref: "#/components/messageTraits/avroMetadata"
+      payload:
+        $ref: "#/components/schemas/UserCreatedPayload"
+      examples:
+        - name: ejemplo
+          payload:
+            id: "550e8400-e29b-41d4-a716-446655440000"
+            firstName: "Juan"
+            lastName: "García"
+            email: "juan.garcia@example.com"
+
+    UserUpdatedEvent:
+      name: UserUpdatedEvent
+      title: Usuario actualizado
+      summary: Se publica cuando se modifican los datos de un usuario existente
+      contentType: application/avro
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      traits:
+        - $ref: "#/components/messageTraits/avroMetadata"
+      payload:
+        $ref: "#/components/schemas/UserUpdatedPayload"
+      examples:
+        - name: ejemplo
+          payload:
+            id: "550e8400-e29b-41d4-a716-446655440000"
+            firstName: "Juan"
+            lastName: "García"
+            roleId: "role-admin"
+            email: "juan.garcia@example.com"
+
+    UserDeletedEvent:
+      name: UserDeletedEvent
+      title: Usuario eliminado
+      summary: Se publica cuando se da de baja a un usuario del sistema
+      contentType: application/avro
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      traits:
+        - $ref: "#/components/messageTraits/avroMetadata"
+      payload:
+        $ref: "#/components/schemas/UserDeletedPayload"
+      examples:
+        - name: ejemplo
+          payload:
+            id: "550e8400-e29b-41d4-a716-446655440000"
+            firstName: "Juan"
+            lastName: "García"
+            email: "juan.garcia@example.com"
+            timestamp: 1715000000000
+
+    UserPasswordUpdatedEvent:
+      name: UserPasswordUpdatedEvent
+      title: Contraseña de usuario actualizada
+      summary: Se publica cuando un usuario cambia su contraseña
+      contentType: application/avro
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      traits:
+        - $ref: "#/components/messageTraits/avroMetadata"
+      payload:
+        $ref: "#/components/schemas/UserPasswordUpdatedPayload"
+      examples:
+        - name: ejemplo
+          payload:
+            id: "550e8400-e29b-41d4-a716-446655440000"
+            firstName: "Juan"
+            lastName: "García"
+            roleId: "role-admin"
+            email: "juan.garcia@example.com"
+
+  schemas:
+    UserCreatedPayload:
+      type: object
+      required: [id, firstName, lastName, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del usuario
+        firstName:
+          type: string
+          description: Nombre del usuario
+        lastName:
+          type: string
+          description: Apellidos del usuario
+        email:
+          type: string
+          format: email
+          description: Email del usuario (destinatario de la notificación)
+
+    UserUpdatedPayload:
+      type: object
+      required: [id, firstName, lastName, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del usuario
+        firstName:
+          type: string
+          description: Nombre actualizado del usuario
+        lastName:
+          type: string
+          description: Apellidos actualizados del usuario
+        roleId:
+          type: string
+          description: Identificador del rol asignado al usuario
+        email:
+          type: string
+          format: email
+          description: Email del usuario (destinatario de la notificación)
+
+    UserDeletedPayload:
+      type: object
+      required: [id, firstName, lastName, email, timestamp]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del usuario eliminado
+        firstName:
+          type: string
+          description: Nombre del usuario
+        lastName:
+          type: string
+          description: Apellidos del usuario
+        email:
+          type: string
+          format: email
+          description: Email del usuario (destinatario de la notificación)
+        timestamp:
+          type: integer
+          format: int64
+          description: Epoch en milisegundos indicando cuándo fue eliminado el usuario
+
+    UserPasswordUpdatedPayload:
+      type: object
+      required: [id, firstName, lastName, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del usuario
+        firstName:
+          type: string
+          description: Nombre del usuario
+        lastName:
+          type: string
+          description: Apellidos del usuario
+        roleId:
+          type: string
+          description: Identificador del rol del usuario
+        email:
+          type: string
+          format: email
+          description: Email del usuario (destinatario de la notificación)
+
+  messageTraits:
+    avroMetadata:
+      bindings:
+        kafka:
+          schemaIdLocation: header
+          bindingVersion: "0.4.0"
