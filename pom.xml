@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>com.sergioricart</groupId>
 			<artifactId>sergioricart-microservice-commons</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.4</version>
 		</dependency>
 
 		<dependency>
